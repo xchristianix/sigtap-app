@@ -43,7 +43,7 @@ def badge_grupo(grupo):
     css = mapa.get(grupo, "tag-out")
     return f'<span class="{css}">{grupo}</span>'
 
-def pesquisar(query, grupo_filtro, apenas_sp):
+def pesquisar(query, grupo_filtro="Todos", apenas_sp=False):
     resultado = df.copy()
     if grupo_filtro != "Todos":
         resultado = resultado[resultado["grupo"] == grupo_filtro]
@@ -74,48 +74,81 @@ with col_titulo:
     st.caption("Tabela SIGTAP · Tabela SUS Paulista (SES-SP) · Competência Fevereiro/2025")
 st.divider()
 
-query = st.text_input("Pesquisar", placeholder="Ex: colonoscopia, hemograma, parto, curetagem...", label_visibility="collapsed")
-col_filtro, col_sp = st.columns([2, 1])
-with col_filtro:
-    grupo_filtro = st.selectbox("Grupo", ["Todos","Ambulatorial","Cirúrgico","Internação","Diagnóstico","Medicamentos/OPM"], label_visibility="collapsed")
+col_busca, col_sp = st.columns([3, 1])
+with col_busca:
+    query = st.text_input("Pesquisar", placeholder="Ex: colonoscopia, hemograma, parto, curetagem...", label_visibility="collapsed")
 with col_sp:
     apenas_sp = st.checkbox("Só com valor SUS-SP", value=False)
 
-resultados = pesquisar(query, grupo_filtro, apenas_sp)
+resultados = pesquisar(query, "Todos", apenas_sp)
 
-if not resultados.empty and (query or grupo_filtro != "Todos" or apenas_sp):
+if not resultados.empty and (query or apenas_sp):
     c1, c2 = st.columns(2)
     c1.metric("Procedimentos encontrados", len(resultados))
     sp_vals = resultados[resultados["sus_sp"] > 0]["sus_sp"]
     c2.metric("Com valor SUS-SP", len(sp_vals))
-    c3, c4 = st.columns(2)
-    c3.metric("Menor valor SIGTAP", fmt_brl(resultados["sigtap"].min()))
-    c4.metric("Maior valor SIGTAP", fmt_brl(resultados["sigtap"].max()))
 
 st.divider()
 
-if not query and grupo_filtro == "Todos" and not apenas_sp:
+def agrupar_similares(df):
+    """Agrupa procedimentos pelo subgrupo, ordenando o de maior valor primeiro."""
+    grupos = {}
+    for _, row in df.iterrows():
+        chave = row["subgrupo"] if row["subgrupo"] else "Outros"
+        if chave not in grupos:
+            grupos[chave] = []
+        grupos[chave].append(row)
+    # Ordena cada grupo por valor decrescente (SUS-SP preferencial, senão SIGTAP)
+    for chave in grupos:
+        grupos[chave].sort(key=lambda r: r["sus_sp"] if r["sus_sp"] > 0 else r["sigtap"], reverse=True)
+    return grupos
+
+if not query and not apenas_sp:
     st.info("👆 Digite o nome ou código do procedimento para iniciar a pesquisa.")
 elif resultados.empty:
     st.warning("Nenhum procedimento encontrado. Tente outros termos.")
 else:
-    st.caption(f"{len(resultados)} resultado(s)" + (" — mostrando os primeiros 100" if len(resultados) > 100 else ""))
-    for _, row in resultados.head(100).iterrows():
-        label = f"**{row['nome']}** — `{row['codigo']}`"
-        with st.expander(label, expanded=False):
-            st.markdown(badge_grupo(row["grupo"]), unsafe_allow_html=True)
-            st.markdown(f"**Subgrupo:** {row['subgrupo']}")
-            st.markdown(f"**Código SIGTAP:** `{row['codigo']}`")
-            if row["tot_amb"] > 0 and row["tot_hosp"] > 0:
-                st.markdown(f"**Val. Ambulatorial:** {fmt_brl(row['tot_amb'])} · **Val. Hospitalar:** {fmt_brl(row['tot_hosp'])}")
+    total = len(resultados)
+    st.caption(f"{total} resultado(s)" + (" — mostrando os primeiros 100" if total > 100 else ""))
+
+    grupos = agrupar_similares(resultados.head(100))
+
+    for subgrupo, procs in grupos.items():
+        # Se há mais de 1 procedimento no subgrupo, mostra cabeçalho do grupo
+        if len(procs) > 1:
+            st.markdown(f"##### 📂 {subgrupo}")
+            melhor = procs[0]  # já ordenado por maior valor
+            valor_ref = melhor["sus_sp"] if melhor["sus_sp"] > 0 else melhor["sigtap"]
+            st.markdown(
+                f"<div style='background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;border-radius:6px;margin-bottom:8px'>"
+                f"⭐ <strong>Maior valor:</strong> {melhor['nome']} — <code>{melhor['codigo']}</code> — "
+                f"{'SUS-SP: ' + fmt_brl(melhor['sus_sp']) if melhor['sus_sp'] > 0 else 'SIGTAP: ' + fmt_brl(melhor['sigtap'])}"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+
+        for i, row in enumerate(procs):
+            eh_melhor = len(procs) > 1 and i == 0
+            label = f"{'⭐ ' if eh_melhor else ''}**{row['nome']}** — `{row['codigo']}`"
+            with st.expander(label, expanded=(len(procs) == 1)):
+                st.markdown(badge_grupo(row["grupo"]), unsafe_allow_html=True)
+                st.markdown(f"**Subgrupo:** {row['subgrupo']}")
+                st.markdown(f"**Código SIGTAP:** `{row['codigo']}`")
+                if row["tot_amb"] > 0 and row["tot_hosp"] > 0:
+                    st.markdown(f"**Val. Ambulatorial:** {fmt_brl(row['tot_amb'])} · **Val. Hospitalar:** {fmt_brl(row['tot_hosp'])}")
+                st.divider()
+                v1, v2 = st.columns(2)
+                v1.metric("SIGTAP", fmt_brl(row["sigtap"]))
+                if row["sus_sp"] > 0:
+                    delta = f"{((row['sus_sp']-row['sigtap'])/row['sigtap']*100):+.1f}% vs SIGTAP" if row["sigtap"] > 0 else None
+                    v2.metric("SUS Paulista", fmt_brl(row["sus_sp"]), delta=delta)
+                else:
+                    v2.metric("SUS Paulista", "—")
+                if eh_melhor and len(procs) > 1:
+                    st.success("✅ Este é o procedimento de maior valor neste grupo.")
+
+        if len(procs) > 1:
             st.divider()
-            v1, v2 = st.columns(2)
-            v1.metric("SIGTAP", fmt_brl(row["sigtap"]))
-            if row["sus_sp"] > 0:
-                delta = f"{((row['sus_sp']-row['sigtap'])/row['sigtap']*100):+.1f}% vs SIGTAP" if row["sigtap"] > 0 else None
-                v2.metric("SUS Paulista", fmt_brl(row["sus_sp"]), delta=delta)
-            else:
-                v2.metric("SUS Paulista", "—")
 
     st.divider()
     export_df = resultados.rename(columns={"codigo":"Código SIGTAP","nome":"Procedimento","grupo":"Grupo","subgrupo":"Subgrupo","sigtap":"Valor SIGTAP (R$)","sus_sp":"Valor SUS-SP (R$)","tot_amb":"Val. Ambulatorial (R$)","tot_hosp":"Val. Hospitalar (R$)"})
