@@ -159,6 +159,6 @@ st.divider()
 st.markdown("""
 <div style='text-align:center; padding: 0.5rem 0 1rem;'>
     <p style='color:#444; font-size:13px; margin:0;'>Desenvolvido pelo setor de <strong>Informações Gerenciais — ICHC FMUSP</strong></p>
-    <p style='color:#888; font-size:12px; margin:6px 0 0;'>Dúvidas? Ramal <strong>783</strong> &nbsp;·&nbsp; SIGTAP Competência 01/2024 &nbsp;·&nbsp; SUS Paulista Fev/2025</p>
+    <p style='color:#888; font-size:12px; margin:6px 0 0;'>Dúvidas? Ramal <strong>7837</strong> &nbsp;·&nbsp; SIGTAP Competência 01/2024 &nbsp;·&nbsp; SUS Paulista Fev/2025</p>
 </div>
 """, unsafe_allow_html=True)
