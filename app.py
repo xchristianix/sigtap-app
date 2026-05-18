@@ -5,6 +5,17 @@ import unicodedata
 st.set_page_config(page_title="Pesquisa SIGTAP / SUS Paulista", page_icon="🏥")
 
 st.markdown("""
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RFKMNHW1SV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-RFKMNHW1SV');
+</script>
+""", unsafe_allow_html=True)
+
+st.markdown("""
 <style>
     .stTextInput > div > div > input { font-size: 16px; border-radius: 8px; border: 1.5px solid #dee2e6; padding: 10px 14px; }
     .tag-diag { background:#f3e8ff; color:#6b21a8; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
