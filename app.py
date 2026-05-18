@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import unicodedata
 
-st.set_page_config(page_title="Pesquisa SIGTAP / SUS Paulista", page_icon="🏥", layout="wide")
+st.set_page_config(page_title="Pesquisa SIGTAP / SUS Paulista", page_icon="🏥")
 
 st.markdown("""
 <style>
@@ -56,9 +56,8 @@ st.title("🏥 Pesquisa de Procedimentos SUS")
 st.caption("Tabela SIGTAP · Tabela SUS Paulista (SES-SP) · Competência Fevereiro/2025")
 st.divider()
 
-col_busca, col_filtro, col_sp = st.columns([3, 1, 1])
-with col_busca:
-    query = st.text_input("Pesquisar", placeholder="Ex: colonoscopia, hemograma, parto, curetagem...", label_visibility="collapsed")
+query = st.text_input("Pesquisar", placeholder="Ex: colonoscopia, hemograma, parto, curetagem...", label_visibility="collapsed")
+col_filtro, col_sp = st.columns([2, 1])
 with col_filtro:
     grupo_filtro = st.selectbox("Grupo", ["Todos","Ambulatorial","Cirúrgico","Internação","Diagnóstico","Medicamentos/OPM"], label_visibility="collapsed")
 with col_sp:
@@ -67,12 +66,13 @@ with col_sp:
 resultados = pesquisar(query, grupo_filtro, apenas_sp)
 
 if not resultados.empty and (query or grupo_filtro != "Todos" or apenas_sp):
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2 = st.columns(2)
     c1.metric("Procedimentos encontrados", len(resultados))
-    c2.metric("Menor valor SIGTAP", fmt_brl(resultados["sigtap"].min()))
-    c3.metric("Maior valor SIGTAP", fmt_brl(resultados["sigtap"].max()))
     sp_vals = resultados[resultados["sus_sp"] > 0]["sus_sp"]
-    c4.metric("Com valor SUS-SP", len(sp_vals))
+    c2.metric("Com valor SUS-SP", len(sp_vals))
+    c3, c4 = st.columns(2)
+    c3.metric("Menor valor SIGTAP", fmt_brl(resultados["sigtap"].min()))
+    c4.metric("Maior valor SIGTAP", fmt_brl(resultados["sigtap"].max()))
 
 st.divider()
 
@@ -85,21 +85,19 @@ else:
     for _, row in resultados.head(100).iterrows():
         label = f"**{row['nome']}** — `{row['codigo']}`"
         with st.expander(label, expanded=False):
-            col_info, col_vals = st.columns([1.5, 1])
-            with col_info:
-                st.markdown(badge_grupo(row["grupo"]), unsafe_allow_html=True)
-                st.markdown(f"**Subgrupo:** {row['subgrupo']}")
-                st.markdown(f"**Código SIGTAP:** `{row['codigo']}`")
-                if row["tot_amb"] > 0 and row["tot_hosp"] > 0:
-                    st.markdown(f"**Val. Ambulatorial:** {fmt_brl(row['tot_amb'])} · **Val. Hospitalar:** {fmt_brl(row['tot_hosp'])}")
-            with col_vals:
-                v1, v2 = st.columns(2)
-                v1.metric("SIGTAP", fmt_brl(row["sigtap"]))
-                if row["sus_sp"] > 0:
-                    delta = f"{((row['sus_sp']-row['sigtap'])/row['sigtap']*100):+.1f}% vs SIGTAP" if row["sigtap"] > 0 else None
-                    v2.metric("SUS Paulista", fmt_brl(row["sus_sp"]), delta=delta)
-                else:
-                    v2.metric("SUS Paulista", "—")
+            st.markdown(badge_grupo(row["grupo"]), unsafe_allow_html=True)
+            st.markdown(f"**Subgrupo:** {row['subgrupo']}")
+            st.markdown(f"**Código SIGTAP:** `{row['codigo']}`")
+            if row["tot_amb"] > 0 and row["tot_hosp"] > 0:
+                st.markdown(f"**Val. Ambulatorial:** {fmt_brl(row['tot_amb'])} · **Val. Hospitalar:** {fmt_brl(row['tot_hosp'])}")
+            st.divider()
+            v1, v2 = st.columns(2)
+            v1.metric("SIGTAP", fmt_brl(row["sigtap"]))
+            if row["sus_sp"] > 0:
+                delta = f"{((row['sus_sp']-row['sigtap'])/row['sigtap']*100):+.1f}% vs SIGTAP" if row["sigtap"] > 0 else None
+                v2.metric("SUS Paulista", fmt_brl(row["sus_sp"]), delta=delta)
+            else:
+                v2.metric("SUS Paulista", "—")
 
     st.divider()
     export_df = resultados.rename(columns={"codigo":"Código SIGTAP","nome":"Procedimento","grupo":"Grupo","subgrupo":"Subgrupo","sigtap":"Valor SIGTAP (R$)","sus_sp":"Valor SUS-SP (R$)","tot_amb":"Val. Ambulatorial (R$)","tot_hosp":"Val. Hospitalar (R$)"})
