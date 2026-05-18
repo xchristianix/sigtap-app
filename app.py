@@ -52,8 +52,15 @@ def pesquisar(query, grupo_filtro, apenas_sp):
         resultado = resultado[mask]
     return resultado
 
-st.title("🏥 Pesquisa de Procedimentos SUS")
-st.caption("Tabela SIGTAP · Tabela SUS Paulista (SES-SP) · Competência Fevereiro/2025")
+col_logo, col_titulo = st.columns([1, 3])
+with col_logo:
+    try:
+        st.image("logo.png", width=180)
+    except:
+        pass
+with col_titulo:
+    st.title("Pesquisa de Procedimentos SUS")
+    st.caption("Tabela SIGTAP · Tabela SUS Paulista (SES-SP) · Competência Fevereiro/2025")
 st.divider()
 
 query = st.text_input("Pesquisar", placeholder="Ex: colonoscopia, hemograma, parto, curetagem...", label_visibility="collapsed")
@@ -104,5 +111,10 @@ else:
     csv = export_df.to_csv(index=False).encode("utf-8")
     st.download_button("⬇ Exportar resultados (.csv)", data=csv, file_name="procedimentos_sus.csv", mime="text/csv")
 
-st.markdown("<p style='text-align:center;color:#adb5bd;font-size:12px;margin-top:2rem'>SIGTAP Competência 01/2024 · SUS Paulista Fevereiro/2025 · SES-SP</p>", unsafe_allow_html=True)
-
+st.divider()
+st.markdown("""
+<div style='text-align:center; padding: 0.5rem 0 1rem;'>
+    <p style='color:#444; font-size:13px; margin:0;'>Desenvolvido pelo setor de <strong>Informações Gerenciais — ICHC FMUSP</strong></p>
+    <p style='color:#888; font-size:12px; margin:6px 0 0;'>Dúvidas? Ramal <strong>783</strong> &nbsp;·&nbsp; SIGTAP Competência 01/2024 &nbsp;·&nbsp; SUS Paulista Fev/2025</p>
+</div>
+""", unsafe_allow_html=True)
