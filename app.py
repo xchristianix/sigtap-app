@@ -17,14 +17,22 @@ st.markdown("""
 
 st.markdown("""
 <style>
-    .stTextInput > div > div > input { font-size: 16px; border-radius: 8px; border: 1.5px solid #dee2e6; padding: 10px 14px; }
-    .tag-diag { background:#f3e8ff; color:#6b21a8; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
-    .tag-amb  { background:#e1f5ee; color:#0f6e56; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
-    .tag-int  { background:#e6f1fb; color:#185fa5; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
-    .tag-cir  { background:#faeeda; color:#854f0b; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
-    .tag-med  { background:#fce7f3; color:#9d174d; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
-    .tag-out  { background:#f1f5f9; color:#475569; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
-    div[data-testid="stExpander"] { border: 1px solid #e9ecef; border-radius: 10px; margin-bottom: 8px; background: white; }
+    /* Força fundo branco e texto escuro independente do modo do celular */
+    .stApp { background-color: #ffffff !important; color: #1a1a1a !important; }
+    .stApp * { color: #1a1a1a !important; }
+    .stTextInput > div > div > input { font-size: 16px; border-radius: 8px; border: 1.5px solid #dee2e6; padding: 10px 14px; background: #ffffff !important; color: #1a1a1a !important; }
+    div[data-testid="stExpander"] { border: 1px solid #dee2e6 !important; border-radius: 10px; margin-bottom: 8px; background: #ffffff !important; }
+    div[data-testid="stExpander"] * { color: #1a1a1a !important; }
+    div[data-testid="stExpander"] summary { background: #f8f9fa !important; }
+    .tag-diag { background:#f3e8ff !important; color:#6b21a8 !important; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
+    .tag-amb  { background:#e1f5ee !important; color:#0f6e56 !important; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
+    .tag-int  { background:#e6f1fb !important; color:#185fa5 !important; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
+    .tag-cir  { background:#faeeda !important; color:#854f0b !important; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
+    .tag-med  { background:#fce7f3 !important; color:#9d174d !important; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
+    .tag-out  { background:#f1f5f9 !important; color:#475569 !important; padding:2px 10px; border-radius:99px; font-size:12px; font-weight:600; }
+    [data-testid="metric-container"] { background: #f8f9fa !important; border-radius: 8px; padding: 8px !important; }
+    [data-testid="stMetricValue"] { color: #1a1a1a !important; }
+    [data-testid="stMetricLabel"] { color: #555 !important; }
 </style>
 """, unsafe_allow_html=True)
 
