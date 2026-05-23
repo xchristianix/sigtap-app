@@ -132,10 +132,10 @@ else:
             label = f"{'⭐ ' if eh_melhor else ''}**{row['nome']}** — `{row['codigo']}`"
             with st.expander(label, expanded=(len(procs) == 1)):
                 st.markdown(badge_grupo(row["grupo"]), unsafe_allow_html=True)
-                st.markdown(f"**Subgrupo:** {row['subgrupo']}")
-                st.markdown(f"**Código SIGTAP:** `{row['codigo']}`")
+                st.markdown(f"<p style='font-size:14px;margin:4px 0'><strong>Subgrupo:</strong> {row['subgrupo']}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='font-size:14px;margin:4px 0'><strong>Código SIGTAP:</strong> <code>{row['codigo']}</code></p>", unsafe_allow_html=True)
                 if row["tot_amb"] > 0 and row["tot_hosp"] > 0:
-                    st.markdown(f"**Val. Ambulatorial:** {fmt_brl(row['tot_amb'])} · **Val. Hospitalar:** {fmt_brl(row['tot_hosp'])}")
+                    st.markdown(f"<p style='font-size:14px'>Val. Ambulatorial: <strong>{fmt_brl(row['tot_amb'])}</strong> &nbsp;·&nbsp; Val. Hospitalar: <strong>{fmt_brl(row['tot_hosp'])}</strong></p>", unsafe_allow_html=True)
                 st.divider()
                 v1, v2 = st.columns(2)
                 v1.metric("SIGTAP", fmt_brl(row["sigtap"]))
@@ -159,6 +159,6 @@ st.divider()
 st.markdown("""
 <div style='text-align:center; padding: 0.5rem 0 1rem;'>
     <p style='color:#444; font-size:13px; margin:0;'>Desenvolvido pelo setor de <strong>Informações Gerenciais — ICHC FMUSP</strong></p>
-    <p style='color:#888; font-size:12px; margin:6px 0 0;'>Dúvidas? Ramal <strong>7837</strong> &nbsp;·&nbsp; SIGTAP Competência 01/2024 &nbsp;·&nbsp; SUS Paulista Fev/2025</p>
+    <p style='color:#888; font-size:12px; margin:6px 0 0;'>Dúvidas? Ramal <strong>783</strong> &nbsp;·&nbsp; SIGTAP Competência 01/2024 &nbsp;·&nbsp; SUS Paulista Fev/2025</p>
 </div>
 """, unsafe_allow_html=True)
