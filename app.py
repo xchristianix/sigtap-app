@@ -137,11 +137,11 @@ else:
 
         for i, row in enumerate(procs):
             eh_melhor = len(procs) > 1 and i == 0
-            label = f"{'⭐ ' if eh_melhor else ''}**{row['nome']}** — `{row['codigo']}`"
+            label = f"{'⭐ ' if eh_melhor else ''}**{row['nome']}** — {row['codigo']}"
             with st.expander(label, expanded=(len(procs) == 1)):
                 st.markdown(badge_grupo(row["grupo"]), unsafe_allow_html=True)
-                st.markdown(f"<p style='font-size:14px;margin:4px 0'><strong>Subgrupo:</strong> {row['subgrupo']}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='font-size:14px;margin:4px 0'><strong>Código SIGTAP:</strong> <code>{row['codigo']}</code></p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='font-size:14px;margin:4px 0;color:#1a1a1a'><strong>Subgrupo:</strong> {row['subgrupo']}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='font-size:14px;margin:4px 0;color:#1a1a1a'><strong>Código SIGTAP:</strong> <span style='font-family:monospace;background:#e9ecef;color:#1a1a1a;padding:2px 8px;border-radius:4px'>{row['codigo']}</span></p>", unsafe_allow_html=True)
                 if row["tot_amb"] > 0 and row["tot_hosp"] > 0:
                     st.markdown(f"<p style='font-size:14px'>Val. Ambulatorial: <strong>{fmt_brl(row['tot_amb'])}</strong> &nbsp;·&nbsp; Val. Hospitalar: <strong>{fmt_brl(row['tot_hosp'])}</strong></p>", unsafe_allow_html=True)
                 st.divider()
