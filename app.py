@@ -6,12 +6,12 @@ st.set_page_config(page_title="Pesquisa SIGTAP / SUS Paulista", page_icon="🏥"
 
 st.markdown("""
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RFKMNHW1SV"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1RPG5HRQFE"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-RFKMNHW1SV');
+  gtag('config', 'G-1RPG5HRQFE');
 </script>
 """, unsafe_allow_html=True)
 
